@@ -6,7 +6,8 @@ const cors = require('cors')
 app.use(cors());
 app.use(express.json());
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
+	connectionLimit : 100,
 	user: "root",
 	host: "localhost",
 	password: "",
@@ -33,6 +34,33 @@ app.post('/create', (req, res) => {
 	 	}
 	 });
 });
+
+app.get('/Balls', (req, res) => {
+	db.query("SELECT * FROM Balls", (err, result) => {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			res.send(result);
+		}
+	});
+});
+
+app.put('/update', (req, res) => {
+	const Id = req.body.Id;
+	const scores = req.body.scores;
+	db.query("UPDATE Balls SET scores = ? WHERE Id = ?", [scores, Id], (err, result) =>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			res.send(result);
+		}
+	});
+});
+
+
+// app.delete()
 
 app.listen(3001, () => {
 	console.log("Hello , you are welcome on port 3001");
